@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>net.tokyolancer.memory</groupId>
+	<artifactId>lancer</artifactId>
+	<version>1.1</version>
+
+	<properties>
+		<maven.compiler.source>24</maven.compiler.source>
+		<maven.compiler.target>24</maven.compiler.target>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
+
+	<distributionManagement>
+		<repository>
+			<id>local-repo</id>
+			<url>file://${project.build.directory}/local-repo</url>
+		</repository>
+	</distributionManagement>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.kohsuke.metainf-services</groupId>
+			<artifactId>metainf-services</artifactId>
+			<version>1.11</version>
+			<optional>true</optional>
+			<scope>provided</scope>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-compiler-plugin</artifactId>
+					<version>3.13.0</version>
+					<configuration>
+						<source>${maven.compiler.source}</source>
+						<target>${maven.compiler.target}</target>
+						<annotationProcessorPaths>
+							<path>
+								<groupId>org.kohsuke.metainf-services</groupId>
+								<artifactId>metainf-services</artifactId>
+								<version>1.11</version>
+							</path>
+						</annotationProcessorPaths>
+						<useIncrementalCompilation>true</useIncrementalCompilation>
+					</configuration>
+				</plugin>
+
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-jar-plugin</artifactId>
+					<version>3.4.2</version>
+					<configuration>
+						<archive>
+							<!--http://branchandbound.net/blog/java/2017/12/automatic-module-name/-->
+							<manifestEntries>
+								<!--Needed when Maven is being rude about modules-->
+								<Automatic-Module-Name>lancer</Automatic-Module-Name>
+								<!--Explicit defining of agents-->
+								<Premain-Class>lancer.core.MethodTransformer</Premain-Class>
+								<Agent-Class>lancer.core.MethodTransformer</Agent-Class>
+								<Can-Redefine-Classes>true</Can-Redefine-Classes>
+								<Can-Retransform-Classes>true</Can-Retransform-Classes>
+							</manifestEntries>
+							<addMavenDescriptor>false</addMavenDescriptor>
+							<compress>true</compress>
+						</archive>
+					</configuration>
+				</plugin>
+
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-dependency-plugin</artifactId>
+					<version>3.6.1</version>
+					<executions>
+						<execution>
+							<id>copy-libs</id>
+							<phase>package</phase>
+							<goals>
+								<goal>copy-dependencies</goal>
+							</goals>
+							<configuration>
+								<outputDirectory>${project.build.outputDirectory}</outputDirectory>
+								<excludeScope>provided</excludeScope>
+							</configuration>
+						</execution>
+					</executions>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>24</source>
+					<target>24</target>
+					<compilerArgs>--enable-preview</compilerArgs>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+</project>
